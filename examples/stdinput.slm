@@ -1,0 +1,6 @@
+str message = "What's your name? ";
+str name = "";
+
+readline (message, name);
+
+formatln ("Salam, {name}! It's nice to meet you.");

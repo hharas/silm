@@ -1,0 +1,13 @@
+int x = 10;
+float y = 20.5;
+str message = "Salam!";
+char grade = 'A';
+bool is_based = true;
+
+formatln ("x = {x}, y = {y}, message = {message}, grade = {grade}, is_based = {is_based}");
+
+typeof (x);
+typeof (y);
+typeof (message);
+typeof (grade);
+typeof (is_based);
