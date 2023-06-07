@@ -1,16 +1,10 @@
 use std::{
+    env::args,
     fs::read_to_string,
     io::{self, Write},
+    path::PathBuf,
     process::exit,
 };
-use structopt::StructOpt;
-
-#[derive(StructOpt)]
-#[structopt(name = "silm", version = "0.1.0", about = "Silm Interpreter")]
-struct Opt {
-    #[structopt(parse(from_os_str), help = "Silm source code file path")]
-    file: Option<std::path::PathBuf>,
-}
 
 #[derive(Clone, Copy, PartialEq)]
 enum DataType {
@@ -28,49 +22,59 @@ struct Variable {
 }
 
 fn main() {
-    let args = Opt::from_args();
-
+    let args: Vec<String> = args().collect();
     let mut variables: Vec<Variable> = Vec::new();
 
-    if let Some(filepath) = args.file {
-        match read_to_string(&filepath) {
-            Ok(source) => {
-                let mut line_number = 0;
-                for line in source.lines() {
-                    line_number += 1;
+    if args.len() < 3 {
+        if args.len() == 1 {
+            println!("Silm 0.1.0 Interpreter");
+            println!("Enter \"exit ();\" to quit");
+            loop {
+                print!("s>>> ");
+                io::stdout().flush().unwrap();
 
-                    interpret(
-                        line.to_string(),
-                        filepath.file_name().unwrap().to_str().unwrap().to_string(),
-                        line_number,
-                        &mut variables,
-                    );
+                let mut input = String::new();
+                io::stdin().read_line(&mut input).unwrap();
+
+                let trimmed_input = input.trim();
+
+                interpret(
+                    trimmed_input.to_string(),
+                    "stdin".to_string(),
+                    0,
+                    &mut variables,
+                );
+            }
+        } else {
+            match args[1].as_str() {
+                "--version" => {
+                    println!("silm interpreter version 0.1.0");
+                }
+
+                _ => {
+                    let filepath = PathBuf::from(&args[1]);
+                    match read_to_string(&filepath) {
+                        Ok(source) => {
+                            let mut line_number = 0;
+                            for line in source.lines() {
+                                line_number += 1;
+
+                                interpret(
+                                    line.to_string(),
+                                    filepath.file_name().unwrap().to_str().unwrap().to_string(),
+                                    line_number,
+                                    &mut variables,
+                                );
+                            }
+                        }
+
+                        Err(error) => {
+                            println!("ERROR[0]: {error}");
+                            exit(1);
+                        }
+                    }
                 }
             }
-
-            Err(error) => {
-                println!("ERROR[0]: {error}");
-                exit(1);
-            }
-        }
-    } else {
-        println!("Silm 0.1.0 Interpreter");
-        println!("Enter \"exit ();\" to quit");
-        loop {
-            print!("s>>> ");
-            io::stdout().flush().unwrap();
-
-            let mut input = String::new();
-            io::stdin().read_line(&mut input).unwrap();
-
-            let trimmed_input = input.trim();
-
-            interpret(
-                trimmed_input.to_string(),
-                "stdin".to_string(),
-                0,
-                &mut variables,
-            );
         }
     }
 }
