@@ -47,6 +47,28 @@ fn main() {
             }
         } else {
             match args[1].as_str() {
+                "--help" => {
+                    println!(
+                        r#"silm - experimental, line-by-line-intepreted programming language
+
+USAGE: silm [OPTIONS]
+
+OPTIONS:
+    --help       Show this help message
+    --version    Show interpreter version
+    <filename>   Silm source code file
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of version 3 of the GNU General Public License
+as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details."#
+                    );
+                }
+
                 "--version" => {
                     println!("silm interpreter version 0.1.0");
                 }
@@ -76,6 +98,8 @@ fn main() {
                 }
             }
         }
+    } else {
+        println!("Too many arguments");
     }
 }
 
