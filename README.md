@@ -2,17 +2,17 @@
 
 Experimental, line-by-line-interpreted programming language written in Rust.
 
-# Why?
+### Why?
 
 I wondered how hard will an interpreter be to write, but it turns out it's pretty easy.
 
 Seriously though: I thought of importing silm (or probably some of its code) to [Aati](https://github.com/hharas/aati) in order to add support for PKGINSTALL files (coming along the way).
 
-# What does Silm mean?
+### What does Silm mean?
 
 Silm (سِلم) is an Arabic word that means "Peace".
 
-# How does it work?
+### How does it work?
 
 `main.slm`:
 ```bash
@@ -63,10 +63,10 @@ silm
 
 Silm has pretty nice error handling too (besides the `formatln` function, as it returns the same string if a variable is not found due to its poor implementation).
 
-# Contribution
+### Contribution
 
 This is a small fun project for me but if you have any ideas for improving it then feel free to make a pull request! I'm interested in seeing Silm get bigger and bigger.
 
-# License
+### License
 
 Silm is licensed under the GNU General Public License version 3.
