@@ -14,6 +14,18 @@ Silm (سِلم) is an Arabic word that means "Peace".
 
 ## How does it work?
 
+At the essence of it, Silm is merely an `interpret()` function that accepts four arguments:
+1. a line of code
+2. filename or input name (e.g. `main.slm` or `stdin`)
+3. current line number in the file (e.g. `0` for `stdin`)
+4. a mutable reference to a vector of `Variable` structs
+
+Which makes it very portable and easy to implement, and also easy to develop further.
+
+If you think about 
+
+## How does the code work?
+
 `main.slm`:
 ```bash
 # We can initialise variables like this:
@@ -22,6 +34,8 @@ float y = 1.5;
 str word = "real";
 char slim_is_a = 'W';
 bool real = true;
+
+# Variables' values and types are also mutable by default
 
 # Function calls look a little weird but they still work
 # Most of them are I/O functions like `println`
