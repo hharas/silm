@@ -6,10 +6,14 @@ use std::{
     process::exit,
 };
 
-use crate::interpreter::{interpret, Variable};
+use crate::{
+    interpreter::{interpret, Variable},
+    version::VERSION,
+};
 
 mod helper;
 mod interpreter;
+mod version;
 
 fn main() {
     let args: Vec<String> = args().collect();
@@ -17,8 +21,9 @@ fn main() {
 
     if args.len() < 3 {
         if args.len() == 1 {
-            println!("Silm 0.1.0 Interpreter");
+            println!("Silm {} Interpreter", VERSION);
             println!("Enter \"exit ();\" to quit");
+
             loop {
                 print!("s>>> ");
                 io::stdout().flush().unwrap();
@@ -60,7 +65,7 @@ GNU General Public License for more details."#
                 }
 
                 "--version" => {
-                    println!("silm interpreter version 0.1.0");
+                    println!("silm interpreter version {}", VERSION);
                 }
 
                 _ => {
