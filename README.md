@@ -30,7 +30,7 @@ Which makes it very portable and easy to implement, and also easy to develop fur
 int x = 10;
 float y = 1.5;
 str word = "real";
-char slim_is_a = 'W';
+char silm_is_a = 'W';
 bool real = true;
 
 # Variables' values and types are also mutable by default
