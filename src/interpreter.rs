@@ -411,9 +411,9 @@ pub fn interpret(
             }
 
             "#" => {}
-            
+
             "" => {}
-            
+
             _ => {
                 println!(
                     "{}:{}: unrecognised function: {}",

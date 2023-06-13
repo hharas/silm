@@ -42,16 +42,17 @@ fn main() {
             }
         } else {
             match args[1].as_str() {
-                "--help" => {
+                "-H" | "--help" => {
                     println!(
                         r#"silm - experimental, line-by-line-intepreted programming language
 
 USAGE: silm [OPTIONS]
 
 OPTIONS:
-    --help       Show this help message
-    --version    Show interpreter version
-    <filename>   Silm source code file
+    -H, --help       Show this help message
+    -V, --version    Show interpreter version
+    -Q, --quiet      Run interactive mode with less verbosity
+        <filename>   Silm source code file
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of version 3 of the GNU General Public License
@@ -64,9 +65,23 @@ GNU General Public License for more details."#
                     );
                 }
 
-                "--version" => {
+                "-V" | "--version" => {
                     println!("silm interpreter version {}", VERSION);
                 }
+
+                "-Q" | "--quiet" => loop {
+                    let mut input = String::new();
+                    io::stdin().read_line(&mut input).unwrap();
+
+                    let trimmed_input = input.trim();
+
+                    interpret(
+                        trimmed_input.to_string(),
+                        "stdin".to_string(),
+                        0,
+                        &mut variables,
+                    );
+                },
 
                 _ => {
                     let filepath = PathBuf::from(&args[1]);

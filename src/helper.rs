@@ -86,23 +86,21 @@ pub fn extract_data(data: &str, variables: &[Variable]) -> Result<Option<Variabl
                     Err(_) => Err("invalid int assignment".to_string()),
                 }
             }
-        } else {
-            if data_tokens.len() == 1 {
-                match get_variable(data, variables) {
-                    Some(variable) => Ok(Some(variable)),
-    
-                    None => Err(format!("variable '{}' unrecognised", data)),
-                }
-            } else {
-                match shunting_yard(data_tokens, variables) {
-                    Ok(result) => Ok(Some(Variable {
-                        identifier: "$uninitialised$".to_string(),
-                        datatype: DataType::Float,
-                        value: result.to_string(),
-                    })),
+        } else if data_tokens.len() == 1 {
+            match get_variable(data, variables) {
+                Some(variable) => Ok(Some(variable)),
 
-                    Err(error) => Err(format!("shunting yard algorithm: {}", error)),
-                }
+                None => Err(format!("variable '{}' unrecognised", data)),
+            }
+        } else {
+            match shunting_yard(data_tokens, variables) {
+                Ok(result) => Ok(Some(Variable {
+                    identifier: "$uninitialised$".to_string(),
+                    datatype: DataType::Float,
+                    value: result.to_string(),
+                })),
+
+                Err(error) => Err(format!("shunting yard algorithm: {}", error)),
             }
         }
     } else {
