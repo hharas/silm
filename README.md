@@ -53,7 +53,7 @@ typeof (y);
 # it receives two strings, it prints out the first one to the user,
 # it receives user input from stdin, then it stores it in the second string
 let name = "";
-readline ("What's your name? ", name)
+readline ("What's your name? ", name);
 
 formatln ("Nice to meet you, {name}!");
 
