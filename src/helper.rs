@@ -66,7 +66,7 @@ pub fn extract_data(data: &str, variables: &[Variable]) -> Result<Option<Variabl
                     Err(error) => Err(format!("shunting yard algorithm: {}", error)),
                 }
             } else if data_tokens[0].contains('.') {
-                match data_tokens[0].parse::<f32>() {
+                match data_tokens[0].parse::<f64>() {
                     Ok(value) => Ok(Some(Variable {
                         datatype: DataType::Float,
                         identifier: "$uninitialised$".to_string(),
@@ -106,6 +106,71 @@ pub fn extract_data(data: &str, variables: &[Variable]) -> Result<Option<Variabl
     } else {
         Ok(None)
     }
+}
+
+#[test]
+fn test_extract_data() {
+    let mut variables: Vec<Variable> = Vec::new();
+
+    variables.push(Variable {
+        identifier: "x".to_string(),
+        datatype: DataType::Int,
+        value: "10".to_string(),
+    });
+
+    assert_eq!(
+        extract_data("10", &variables),
+        Ok(Some(Variable {
+            identifier: "$uninitialised$".to_string(),
+            datatype: DataType::Int,
+            value: "10".to_string()
+        }))
+    );
+
+    assert_eq!(
+        extract_data("1.0", &variables),
+        Ok(Some(Variable {
+            identifier: "$uninitialised$".to_string(),
+            datatype: DataType::Float,
+            value: "1".to_string()
+        }))
+    );
+
+    assert_eq!(
+        extract_data("\"alhamdulillah\"", &variables),
+        Ok(Some(Variable {
+            identifier: "$uninitialised$".to_string(),
+            datatype: DataType::Str,
+            value: "alhamdulillah".to_string()
+        }))
+    );
+
+    assert_eq!(
+        extract_data("'W'", &variables),
+        Ok(Some(Variable {
+            identifier: "$uninitialised$".to_string(),
+            datatype: DataType::Char,
+            value: "W".to_string()
+        }))
+    );
+
+    assert_eq!(
+        extract_data("true", &variables),
+        Ok(Some(Variable {
+            identifier: "$uninitialised$".to_string(),
+            datatype: DataType::Bool,
+            value: "true".to_string()
+        }))
+    );
+
+    assert_eq!(
+        extract_data("10 + x", &variables),
+        Ok(Some(Variable {
+            identifier: "$uninitialised$".to_string(),
+            datatype: DataType::Float,
+            value: "20".to_string()
+        }))
+    );
 }
 
 pub fn assign(variable: Variable, variables: &mut Vec<Variable>) {
@@ -149,6 +214,22 @@ pub fn get_variable(identifier: &str, variables: &[Variable]) -> Option<Variable
         })
 }
 
+#[test]
+fn test_get_variable() {
+    let mut variables: Vec<Variable> = Vec::new();
+
+    let new_variable = Variable {
+        identifier: "name".to_string(),
+        datatype: DataType::Str,
+        value: "hasan".to_string(),
+    };
+
+    variables.push(new_variable.clone());
+
+    assert_eq!(get_variable("name", &variables), Some(new_variable));
+    assert_eq!(get_variable("$uninitialised$", &variables), None);
+}
+
 pub fn throw_error(message: &str, current_function: &str, input_name: String, line_number: i32) {
     println!(
         "{}:{}: {}: {}",
@@ -158,14 +239,14 @@ pub fn throw_error(message: &str, current_function: &str, input_name: String, li
 
 // I'm planning to make this function also return a DataType
 // an Int by default, or a Float if the result is so
-pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f32, String> {
+pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f64, String> {
     let mut output_queue: Vec<String> = Vec::new();
-    let mut output_stack: Vec<f32> = Vec::new();
+    let mut output_stack: Vec<f64> = Vec::new();
     let mut operator_stack: Vec<String> = Vec::new();
     let operators = "+-*/^%";
 
     for token in tokens {
-        if let Ok(number) = token.parse::<f32>() {
+        if let Ok(number) = token.parse::<f64>() {
             output_queue.push(number.to_string());
             output_stack.push(number);
         } else if operators.contains(token) {
@@ -221,7 +302,7 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f32, S
             match get_variable(token, variables) {
                 Some(variable) => {
                     if variable.datatype == DataType::Int || variable.datatype == DataType::Float {
-                        if let Ok(number) = variable.value.parse::<f32>() {
+                        if let Ok(number) = variable.value.parse::<f64>() {
                             output_queue.push(number.to_string());
                             output_stack.push(number);
                         } else {
@@ -269,4 +350,20 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f32, S
     }
 
     Ok(output_stack[0])
+}
+
+#[test]
+fn test_shunting_yard() {
+    let mut variables: Vec<Variable> = Vec::new();
+    variables.push(Variable {
+        identifier: "x".to_string(),
+        datatype: DataType::Int,
+        value: "256".to_string(),
+    });
+
+    let tokens: Vec<&str> = "x + 1 + 2 - ( 3 * 4 ) / 5 ^ 6 % 7"
+        .split_whitespace()
+        .collect();
+
+    assert_eq!(shunting_yard(tokens, &variables), Ok(258.92));
 }

@@ -5,7 +5,7 @@ use std::{
 
 use crate::helper::{assign, extract_data, get_variable, represent_datatype, throw_error};
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DataType {
     Int,
     Float,
@@ -14,6 +14,7 @@ pub enum DataType {
     Bool,
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Variable {
     pub datatype: DataType,
     pub identifier: String,
