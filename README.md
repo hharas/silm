@@ -27,11 +27,11 @@ Which makes it very portable and easy to implement, and also easy to develop fur
 `main.slm`:
 ```bash
 # We can initialise variables like this:
-int x = 10;
-float y = 1.5;
-str word = "real";
-char silm_is_a = 'W';
-bool real = true;
+let x = 10;
+let y = 1.5;
+let word = "real";
+let silm_is_a = 'W';
+let real = true;
 
 # Variables' values and types are also mutable by default
 
@@ -52,9 +52,8 @@ typeof (y);
 # and we have `readline`! the most complicated function of them all
 # it receives two strings, it prints out the first one to the user,
 # it receives user input from stdin, then it stores it in the second string
-str message = "What's your name? ";
-str name = "";
-readline (message, name)
+let name = "";
+readline ("What's your name? ", name)
 
 formatln ("Nice to meet you, {name}!");
 

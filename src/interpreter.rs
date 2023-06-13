@@ -3,7 +3,7 @@ use std::{
     process::exit,
 };
 
-use crate::helper::{assign, get_variable, represent_datatype, throw_error};
+use crate::helper::{assign, extract_data, get_variable, represent_datatype, throw_error};
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum DataType {
@@ -26,141 +26,56 @@ pub fn interpret(
     line_number: i32,
     variables: &mut Vec<Variable>,
 ) {
-    let tokens: Vec<&str> = line.trim().split(' ').collect();
+    let tokens: Vec<&str> = line.split_whitespace().collect();
     if !tokens.is_empty() {
         match tokens[0] {
-            "int" => {
-                // int x = 10;
-                if tokens.len() == 4 {
-                    if tokens[2] == "=" {
-                        let datatype = DataType::Int;
-                        let identifier = tokens[1].to_string();
-
-                        let value = tokens[3].trim_end_matches(';').to_string();
-
-                        match value.parse::<i32>() {
-                            Ok(_) => assign(
-                                Variable {
-                                    datatype,
-                                    identifier,
-                                    value,
-                                },
-                                variables,
-                            ),
-
-                            Err(_) => {
-                                throw_error(
-                                    format!("'{}' is not an integer", value).as_str(),
-                                    "int",
-                                    input_name,
-                                    line_number,
-                                );
-                            }
-                        }
-                    } else {
-                        throw_error(
-                            "assignment operator (=) not found",
-                            "int",
-                            input_name,
-                            line_number,
-                        );
-                    }
-                } else {
-                    throw_error(
-                        "improper amount of tokens (!= 4)",
-                        "int",
-                        input_name,
-                        line_number,
-                    );
-                }
-            }
-
-            "float" => {
-                // float y = 20.5;
-                if tokens.len() == 4 {
-                    if tokens[2] == "=" {
-                        let datatype = DataType::Float;
-                        let identifier = tokens[1].to_string();
-                        let value = tokens[3].trim_end_matches(';').to_string();
-
-                        match value.parse::<f32>() {
-                            Ok(_) => {
-                                if value.contains('.') {
-                                    assign(
-                                        Variable {
-                                            datatype,
-                                            identifier,
-                                            value,
-                                        },
-                                        variables,
-                                    )
-                                } else {
-                                    throw_error(
-                                        format!(
-                                            "'{}' does not contain a floating point",
-                                            identifier
-                                        )
-                                        .as_str(),
-                                        "float",
-                                        input_name,
-                                        line_number,
-                                    );
-                                }
-                            }
-
-                            Err(_) => {
-                                throw_error(
-                                    format!("'{}' is not a float", value).as_str(),
-                                    "float",
-                                    input_name,
-                                    line_number,
-                                );
-                            }
-                        }
-                    } else {
-                        throw_error(
-                            "assignment operator (=) not found",
-                            "float",
-                            input_name,
-                            line_number,
-                        );
-                    }
-                } else {
-                    throw_error(
-                        "improper amount of tokens (!= 4)",
-                        "float",
-                        input_name,
-                        line_number,
-                    );
-                }
-            }
-
-            "str" => {
-                // str message = "Salam brother";
+            "let" => {
+                // let x = 10;
                 if tokens.len() >= 4 {
                     if tokens[2] == "=" {
-                        let datatype = DataType::Str;
                         let identifier = tokens[1].to_string();
+                        let supposed_value = &mut tokens[3..].join(" ");
 
-                        let supposed_value = &tokens[3..].join(" ");
+                        if supposed_value.ends_with(';') {
+                            supposed_value.pop();
 
-                        let value = supposed_value
-                            .trim_start_matches('"')
-                            .trim_end_matches("\";")
-                            .to_string();
+                            match extract_data(supposed_value, variables) {
+                                Ok(returned_variable_option) => {
+                                    if let Some(returned_variable) = returned_variable_option {
+                                        let datatype = returned_variable.datatype;
+                                        let value = returned_variable.value;
 
-                        assign(
-                            Variable {
-                                datatype,
-                                identifier,
-                                value,
-                            },
-                            variables,
-                        )
+                                        assign(
+                                            Variable {
+                                                identifier,
+                                                datatype,
+                                                value,
+                                            },
+                                            variables,
+                                        )
+                                    } else {
+                                        throw_error(
+                                            "empty value given",
+                                            "let",
+                                            input_name,
+                                            line_number,
+                                        )
+                                    }
+                                }
+                                Err(error) => throw_error(&error, "let", input_name, line_number),
+                            }
+                        } else {
+                            throw_error(
+                                "statement does not end with a semicolon",
+                                "let",
+                                input_name,
+                                line_number,
+                            );
+                        }
                     } else {
                         throw_error(
                             "assignment operator (=) not found",
-                            "str",
+                            "let",
                             input_name,
                             line_number,
                         );
@@ -168,101 +83,7 @@ pub fn interpret(
                 } else {
                     throw_error(
                         "improper amount of tokens (!>= 4)",
-                        "str",
-                        input_name,
-                        line_number,
-                    );
-                }
-            }
-
-            "char" => {
-                // char grade = 'A';
-                if tokens.len() == 4 {
-                    if tokens[2] == "=" {
-                        let datatype = DataType::Char;
-                        let identifier = tokens[1].to_string();
-
-                        let value = tokens[3]
-                            .trim_start_matches('\'')
-                            .trim_end_matches("\';")
-                            .to_string();
-
-                        match value.parse::<char>() {
-                            Ok(_) => assign(
-                                Variable {
-                                    datatype,
-                                    identifier,
-                                    value,
-                                },
-                                variables,
-                            ),
-
-                            Err(_) => {
-                                throw_error(
-                                    format!("'{}' is not a char", value).as_str(),
-                                    "char",
-                                    input_name,
-                                    line_number,
-                                );
-                            }
-                        }
-                    } else {
-                        throw_error(
-                            "assignment operator (=) not found",
-                            "char",
-                            input_name,
-                            line_number,
-                        );
-                    }
-                } else {
-                    throw_error(
-                        "improper amount of tokens (!= 4)",
-                        "char",
-                        input_name,
-                        line_number,
-                    );
-                }
-            }
-
-            "bool" => {
-                // bool realest = true;
-                if tokens.len() == 4 {
-                    if tokens[2] == "=" {
-                        let datatype = DataType::Bool;
-                        let identifier = tokens[1].to_string();
-                        let value = tokens[3].trim_end_matches(';').to_string();
-
-                        match value.parse::<bool>() {
-                            Ok(_) => assign(
-                                Variable {
-                                    datatype,
-                                    identifier,
-                                    value,
-                                },
-                                variables,
-                            ),
-
-                            Err(_) => {
-                                throw_error(
-                                    format!("'{}' is not a boolean", value).as_str(),
-                                    "bool",
-                                    input_name,
-                                    line_number,
-                                );
-                            }
-                        }
-                    } else {
-                        throw_error(
-                            "assignment operator (=) not found",
-                            "bool",
-                            input_name,
-                            line_number,
-                        );
-                    }
-                } else {
-                    throw_error(
-                        "improper amount of tokens (!= 4)",
-                        "bool",
+                        "let",
                         input_name,
                         line_number,
                     );
@@ -271,28 +92,43 @@ pub fn interpret(
 
             "println" => {
                 // println (message);
-                if tokens.len() == 2 {
-                    let argument = tokens[1].trim_start_matches('(').trim_end_matches(");");
-                    if !argument.is_empty() {
-                        match variables
-                            .iter()
-                            .find(|variable| variable.identifier == argument)
-                        {
-                            Some(variable) => {
-                                println!("{}", variable.value);
-                            }
+                if tokens.len() >= 2 {
+                    let argument = &mut tokens[1..].join(" ");
 
-                            None => {
-                                throw_error(
-                                    format!("variable '{}' unrecognised", argument).as_str(),
-                                    "println",
-                                    input_name,
-                                    line_number,
-                                );
+                    if argument.ends_with(';') {
+                        argument.pop();
+
+                        if argument.starts_with('(') && argument.ends_with(')') {
+                            argument.remove(0);
+                            argument.pop();
+
+                            match extract_data(argument, variables) {
+                                Ok(variable_option) => {
+                                    if let Some(variable) = variable_option {
+                                        println!("{}", variable.value);
+                                    } else {
+                                        println!();
+                                    }
+                                }
+                                Err(error) => {
+                                    throw_error(&error, "println", input_name, line_number);
+                                }
                             }
+                        } else {
+                            throw_error(
+                                "function call does not contain parantheses",
+                                "println",
+                                input_name,
+                                line_number,
+                            );
                         }
                     } else {
-                        println!();
+                        throw_error(
+                            "function call does not end with a semicolon",
+                            "println",
+                            input_name,
+                            line_number,
+                        );
                     }
                 } else {
                     throw_error("no argument provided", "println", input_name, line_number);
@@ -302,26 +138,65 @@ pub fn interpret(
             "formatln" => {
                 // formatln ("Salam {name}");
                 if tokens.len() >= 2 {
-                    let argument_str = &tokens[1..].join(" ");
-                    let argument_str = argument_str
-                        .trim_start_matches("(\"")
-                        .trim_end_matches("\");");
+                    let argument_str = &mut tokens[1..].join(" ");
 
-                    let mut result = String::from(argument_str);
+                    if argument_str.ends_with(';') {
+                        argument_str.pop();
 
-                    // Can't loop over `variables` twice or else the borrow checker will go bananas
-                    for index in 0..variables.len() {
-                        let variable = &variables[index];
-                        let placeholder = format!("{{{}}}", variable.identifier);
+                        if argument_str.starts_with('(') && argument_str.ends_with(')') {
+                            argument_str.remove(0);
+                            argument_str.pop();
 
-                        if let Some(found_variable) = get_variable(&variable.identifier, variables)
-                        {
-                            let value = found_variable.value;
-                            result = result.replace(&placeholder, &value);
+                            match extract_data(argument_str, variables) {
+                                Ok(argument_option) => {
+                                    if let Some(argument) = argument_option {
+                                        let mut result = argument.value;
+
+                                        // Can't loop over `variables` twice or else the borrow checker will go bananas
+                                        for index in 0..variables.len() {
+                                            let variable = &variables[index];
+                                            let placeholder =
+                                                format!("{{{}}}", variable.identifier);
+
+                                            if let Some(found_variable) =
+                                                get_variable(&variable.identifier, variables)
+                                            {
+                                                let value = found_variable.value;
+                                                result = result.replace(&placeholder, &value);
+                                            }
+                                        }
+
+                                        println!("{}", result);
+                                    } else {
+                                        throw_error(
+                                            "function requires one argument",
+                                            "formatln",
+                                            input_name,
+                                            line_number,
+                                        )
+                                    }
+                                }
+
+                                Err(error) => {
+                                    throw_error(&error, "formatln", input_name, line_number)
+                                }
+                            }
+                        } else {
+                            throw_error(
+                                "function call does not contain parantheses",
+                                "formatln",
+                                input_name,
+                                line_number,
+                            );
                         }
+                    } else {
+                        throw_error(
+                            "function call does not end with a semicolon",
+                            "formatln",
+                            input_name,
+                            line_number,
+                        );
                     }
-
-                    println!("{}", result);
                 } else {
                     throw_error(
                         "improper amount of tokens (!>= 2)",
@@ -335,28 +210,44 @@ pub fn interpret(
             "typeof" => {
                 // typeof (x);
                 if tokens.len() == 2 {
-                    let argument = tokens[1].trim_start_matches('(').trim_end_matches(");");
-                    if !argument.is_empty() {
-                        match variables
-                            .iter()
-                            .find(|variable| variable.identifier == argument)
-                        {
-                            Some(variable) => {
-                                println!("{}", represent_datatype(variable.datatype));
-                            }
+                    let argument_str = &mut tokens[1..].join(" ");
 
-                            None => {
-                                throw_error(
-                                    format!("variable '{}' unrecognised", argument).as_str(),
-                                    "typeof",
-                                    input_name,
-                                    line_number,
-                                );
+                    if argument_str.ends_with(';') {
+                        argument_str.pop();
+
+                        if argument_str.starts_with('(') && argument_str.ends_with(')') {
+                            argument_str.remove(0);
+                            argument_str.pop();
+
+                            match extract_data(argument_str, variables) {
+                                Ok(argument_option) => {
+                                    if let Some(argument) = argument_option {
+                                        println!("{}", represent_datatype(argument.datatype));
+                                    } else {
+                                        throw_error(
+                                            "function requires one argument",
+                                            "typeof",
+                                            input_name,
+                                            line_number,
+                                        )
+                                    }
+                                }
+
+                                Err(error) => {
+                                    throw_error(&error, "typeof", input_name, line_number);
+                                }
                             }
+                        } else {
+                            throw_error(
+                                "function call does not contain parantheses",
+                                "typeof",
+                                input_name,
+                                line_number,
+                            );
                         }
                     } else {
                         throw_error(
-                            "improper amount of tokens (!= 2)",
+                            "function call does not end with a semicolon",
                             "typeof",
                             input_name,
                             line_number,
@@ -368,103 +259,124 @@ pub fn interpret(
             }
 
             "readline" => {
-                // readline (message, input);
-                if tokens.len() == 3 {
-                    let arguments = &tokens[1..];
+                // readline ("Enter your username: ", input);
+                if tokens.len() >= 3 {
+                    let arguments = &mut tokens[1..].join(" ");
 
-                    if arguments.len() == 2 {
-                        let first_argument_identifier =
-                            arguments[0].trim_start_matches('(').trim_end_matches(',');
-                        match get_variable(first_argument_identifier, variables) {
-                            Some(first_argument) => {
-                                if first_argument.datatype == DataType::Str {
-                                    let second_argument_identifier =
-                                        arguments[1].trim_end_matches(");");
-                                    match get_variable(second_argument_identifier, variables) {
-                                        Some(second_argument) => {
-                                            if second_argument.datatype == DataType::Str {
-                                                print!("{}", first_argument.value);
-                                                io::stdout().flush().unwrap();
+                    if arguments.ends_with(';') {
+                        arguments.pop();
 
-                                                let mut stdin_text = String::new();
-                                                match io::stdin().read_line(&mut stdin_text) {
-                                                    Ok(_) => assign(
-                                                        Variable {
-                                                            datatype: second_argument.datatype,
-                                                            identifier: second_argument.identifier,
-                                                            value: stdin_text
-                                                                .trim_end()
-                                                                .to_string(),
-                                                        },
-                                                        variables,
-                                                    ),
+                        if arguments.starts_with('(') && arguments.ends_with(')') {
+                            arguments.remove(0);
+                            arguments.pop();
 
-                                                    Err(_) => {
-                                                        throw_error(
-                                                            "invalid input",
-                                                            "readline",
-                                                            input_name,
-                                                            line_number,
-                                                        );
+                            match arguments.rsplit_once(',') {
+                                Some((first_argument_str, second_argument_str)) => {
+                                    match extract_data(first_argument_str, variables) {
+                                        Ok(first_argument_option) => {
+                                            if let Some(first_argument) = first_argument_option {
+                                                match extract_data(second_argument_str, variables) {
+                                                    Ok(second_argument_option) => {
+                                                        if let Some(second_argument) =
+                                                            second_argument_option
+                                                        {
+                                                            if second_argument.datatype
+                                                                == DataType::Str
+                                                            {
+                                                                print!("{}", first_argument.value);
+                                                                io::stdout().flush().unwrap();
+
+                                                                let mut stdin_text = String::new();
+                                                                match io::stdin()
+                                                                    .read_line(&mut stdin_text)
+                                                                {
+                                                                    Ok(_) => assign(
+                                                                        Variable {
+                                                                            datatype:
+                                                                                second_argument
+                                                                                    .datatype,
+                                                                            identifier:
+                                                                                second_argument
+                                                                                    .identifier,
+                                                                            value: stdin_text
+                                                                                .trim_end()
+                                                                                .to_string(),
+                                                                        },
+                                                                        variables,
+                                                                    ),
+
+                                                                    Err(_) => {
+                                                                        throw_error(
+                                                                            "invalid input",
+                                                                            "readline",
+                                                                            input_name,
+                                                                            line_number,
+                                                                        );
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                throw_error(
+                                                                    format!(
+                                                                        "invalid type: '{}' must be a str",
+                                                                        first_argument_str
+                                                                    )
+                                                                    .as_str(),
+                                                                    "readline",
+                                                                    input_name,
+                                                                    line_number,
+                                                                );
+                                                            }
+                                                        } else {
+                                                            throw_error(
+                                                                "second argument not given",
+                                                                "readline",
+                                                                input_name,
+                                                                line_number,
+                                                            )
+                                                        }
                                                     }
+
+                                                    Err(error) => throw_error(
+                                                        &error,
+                                                        "readline",
+                                                        input_name,
+                                                        line_number,
+                                                    ),
                                                 }
                                             } else {
                                                 throw_error(
-                                                    format!(
-                                                        "invalid type: '{}' must be a str",
-                                                        second_argument_identifier
-                                                    )
-                                                    .as_str(),
+                                                    "first argument not given",
                                                     "readline",
                                                     input_name,
                                                     line_number,
-                                                );
+                                                )
                                             }
                                         }
 
-                                        None => {
-                                            throw_error(
-                                                format!(
-                                                    "variable '{}' unrecognised",
-                                                    first_argument_identifier
-                                                )
-                                                .as_str(),
-                                                "readline",
-                                                input_name,
-                                                line_number,
-                                            );
+                                        Err(error) => {
+                                            throw_error(&error, "readline", input_name, line_number)
                                         }
                                     }
-                                } else {
-                                    throw_error(
-                                        format!(
-                                            "invalid type: '{}' must be a str",
-                                            first_argument_identifier
-                                        )
-                                        .as_str(),
-                                        "readline",
-                                        input_name,
-                                        line_number,
-                                    );
                                 }
-                            }
 
-                            None => {
-                                throw_error(
-                                    format!(
-                                        "variable '{}' unrecognised",
-                                        first_argument_identifier
-                                    )
-                                    .as_str(),
+                                None => throw_error(
+                                    "function requires two arguments",
                                     "readline",
                                     input_name,
                                     line_number,
-                                );
+                                ),
                             }
+                        } else {
+                            throw_error(
+                                "function call does not contain parantheses",
+                                "readline",
+                                input_name,
+                                line_number,
+                            );
                         }
                     } else {
                         throw_error(
-                            "invalid amount of arguments (!= 2)",
+                            "function call does not end with a semicolon",
                             "readline",
                             input_name,
                             line_number,
@@ -498,13 +410,13 @@ pub fn interpret(
                 }
             }
 
-            "" => {}
-
             "#" => {}
-
+            
+            "" => {}
+            
             _ => {
                 println!(
-                    "{}:{}: unknown function: {}",
+                    "{}:{}: unrecognised function: {}",
                     input_name,
                     line_number,
                     tokens.join(" ")

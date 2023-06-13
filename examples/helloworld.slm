@@ -1,2 +1,1 @@
-str message = "Hello World!";
-println (message);
+println ("Hello World!");

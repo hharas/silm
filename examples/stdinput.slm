@@ -1,6 +1,5 @@
-str message = "What's your name? ";
-str name = "";
+let name = "";
 
-readline (message, name);
+readline ("What's your name? ", name);
 
 formatln ("Salam, {name}! It's nice to meet you.");
