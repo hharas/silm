@@ -22,6 +22,28 @@ At the essence of it, Silm is merely an `interpret()` function that accepts four
 
 Which makes it very portable and easy to implement, and also easy to develop further.
 
+## What is what?
+
+### `src/main.rs`
+
+This is the CLI front-end of Silm, or specifically the `src/interpreter.rs` module. It can run on interactive mode, interpret a file by going through it line by line, execute commands from the command line, etc.
+
+### `src/interpreter.rs`
+
+Now that's the whole wrapper of the language, it contains the `interpret()` function which is ran on files line-by-line or through an interactive mode.
+
+### `src/functions.rs`
+
+That's the Standard Library of Silm, since it contains the functions `interpreter.rs` will use and execute based on user input. It contains functions like `println`, `let`, `readline` and more.
+
+### `src/helpelr.rs`
+
+These are helper functions that are needed for the functions in the standard library to work. It contains some algorithms that make up the essence of the language.
+
+#### `src/version.rs`
+
+Just a file that reminds the Silm what version it is at right now.
+
 ## How does the code work?
 
 `main.slm`:
