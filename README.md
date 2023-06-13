@@ -36,7 +36,7 @@ Now that's the whole wrapper of the language, it contains the `interpret()` func
 
 That's the Standard Library of Silm, since it contains the functions `interpreter.rs` will use and execute based on user input. It contains functions like `println`, `let`, `readline` and more.
 
-### `src/helpelr.rs`
+### `src/helper.rs`
 
 These are helper functions that are needed for the functions in the standard library to work. It contains some algorithms that make up the essence of the language.
 
