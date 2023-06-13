@@ -88,7 +88,17 @@ GNU General Public License for more details."#
                 if args.len() > 2 {
                     let command = args[2].clone();
 
-                    interpret(command, "<shell>".to_string(), 0, &mut variables);
+                    let lines: Vec<&str> = command.lines().collect();
+
+                    if lines.len() < 2 {
+                        interpret(command, "<shell>".to_string(), 0, &mut variables);
+                    } else {
+                        let mut current_line = 0;
+                        for line in lines {
+                            current_line += 1;
+                            interpret(line.to_string(), "<shell>".to_string(), current_line, &mut variables);
+                        }
+                    }
                 } else {
                     println!("very few arguments");
                 }
