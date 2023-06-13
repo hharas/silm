@@ -11,6 +11,7 @@ use crate::{
     version::VERSION,
 };
 
+mod functions;
 mod helper;
 mod interpreter;
 mod version;

@@ -189,6 +189,46 @@ pub fn assign(variable: Variable, variables: &mut Vec<Variable>) {
     }
 }
 
+#[test]
+fn test_assign() {
+    let mut variables: Vec<Variable> = Vec::new();
+
+    variables.push(Variable {
+        identifier: "already_there".to_string(),
+        datatype: DataType::Bool,
+        value: "false".to_string(),
+    });
+
+    let new_variable = Variable {
+        identifier: "new_var".to_string(),
+        datatype: DataType::Int,
+        value: "10".to_string(),
+    };
+
+    assign(new_variable, &mut variables);
+
+    assert!(variables
+        .iter()
+        .any(|variable| variable.identifier == "new_var".to_string()
+            && variable.datatype == DataType::Int
+            && variable.value == "10".to_string()));
+
+    assign(
+        Variable {
+            identifier: "already_there".to_string(),
+            datatype: DataType::Str,
+            value: "changed now!".to_string(),
+        },
+        &mut variables,
+    );
+
+    assert!(variables.iter().any(
+        |variable| variable.identifier == "already_there".to_string()
+            && variable.datatype == DataType::Str
+            && variable.value == "changed now!".to_string()
+    ));
+}
+
 pub fn represent_datatype(datatype: DataType) -> &'static str {
     match datatype {
         DataType::Bool => "bool",
