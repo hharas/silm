@@ -35,7 +35,7 @@ fn main() {
 
             interpret(
                 trimmed_input.to_string(),
-                "stdin".to_string(),
+                "<stdin>".to_string(),
                 1,
                 &mut variables,
             );
