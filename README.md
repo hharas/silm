@@ -42,7 +42,7 @@ These are helper functions that are needed for the functions in the standard lib
 
 #### `src/version.rs`
 
-Just a file that reminds the Silm what version it is at right now.
+Just a file that reminds Silm what version it is right now.
 
 ## How does the code work?
 
