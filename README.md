@@ -17,7 +17,7 @@ Silm (سِلم) is an Arabic word that means "Peace".
 At the essence of it, Silm is merely an `interpret()` function that accepts four arguments:
 1. a line of code,
 2. filename or input name (e.g. `main.slm` or `<stdin>`),
-3. current line number in the file (e.g. `0` for `<stdin>`),
+3. current line number in the file (e.g. `1` for `<stdin>`),
 4. and a mutable reference to a vector of `Variable` structs.
 
 Which makes it very portable and easy to implement, and also easy to develop further.

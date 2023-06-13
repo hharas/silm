@@ -36,7 +36,7 @@ fn main() {
             interpret(
                 trimmed_input.to_string(),
                 "stdin".to_string(),
-                0,
+                1,
                 &mut variables,
             );
         }
@@ -91,12 +91,17 @@ GNU General Public License for more details."#
                     let lines: Vec<&str> = command.lines().collect();
 
                     if lines.len() < 2 {
-                        interpret(command, "<shell>".to_string(), 0, &mut variables);
+                        interpret(command, "<shell>".to_string(), 1, &mut variables);
                     } else {
                         let mut current_line = 0;
                         for line in lines {
                             current_line += 1;
-                            interpret(line.to_string(), "<shell>".to_string(), current_line, &mut variables);
+                            interpret(
+                                line.to_string(),
+                                "<shell>".to_string(),
+                                current_line,
+                                &mut variables,
+                            );
                         }
                     }
                 } else {
