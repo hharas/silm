@@ -49,38 +49,38 @@ Just a file that reminds Silm what version it is right now.
 `main.slm`:
 ```bash
 # We can initialise variables like this:
-let x = 10;
-let y = 1.5;
-let word = "real";
-let silm_is_a = 'W';
-let real = true;
+let x = 10
+let y = 1.5
+let word = "real"
+let silm_is_a = 'W'
+let real = true
 
 # Variables' values and types are also mutable by default
 
 # Function calls look a little weird but they still work
 # Most of them are I/O functions like `println`
 # which prints out a variable's value
-println (x);
+println (x)
 
 # or it takes nothing and prints an empty newline
-println ();
+println ()
 
 # We also got `formatln` which receives a string value with placeholders for variables
-formatln ("Silm is {word}");
+formatln ("Silm is {word}")
 
-# and `typeof` which receives a variable and prints out its datatype
-typeof (y);
+# There's also `typeof`, which receives a variable and returns a str containing the variable's datatype
+println (typeof (y))
 
 # and we have `readline`! the most complicated function of them all
 # it receives two strings, it prints out the first one to the user,
 # it receives user input from stdin, then it stores it in the second string
-let name = "";
-readline ("What's your name? ", name);
+let name = ""
+readline ("What's your name? ", name)
 
-formatln ("Nice to meet you, {name}!");
+formatln ("Nice to meet you, {name}!")
 
 # at this point the program will exit, but you can also explicltly exit using:
-exit ();
+exit ()
 # this is helpful when you're using the interactive mode
 ```
 

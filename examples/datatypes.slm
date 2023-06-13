@@ -1,13 +1,13 @@
-let x = 10;
-let y = 20.5;
-let message = "Salam!";
-let grade = 'A';
-let is_based = true;
+let x = 10
+let y = 20.5
+let message = "Salam!"
+let grade = 'A'
+let is_based = true
 
-formatln ("x = {x}, y = {y}, message = {message}, grade = {grade}, is_based = {is_based}");
+formatln ("x = {x}, y = {y}, message = {message}, grade = {grade}, is_based = {is_based}")
 
-typeof (x);
-typeof (y);
-typeof (message);
-typeof (grade);
-typeof (is_based);
+println (typeof (x))
+println (typeof (y))
+println (typeof (message))
+println (typeof (grade))
+println (typeof (is_based))

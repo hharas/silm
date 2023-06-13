@@ -22,7 +22,7 @@ fn main() {
 
     if args.len() == 1 {
         println!("Silm {} Interpreter", VERSION);
-        println!("Enter \"exit ();\" to quit");
+        println!("Enter \"exit ()\" to quit");
 
         loop {
             print!("s>>> ");

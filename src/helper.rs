@@ -1,4 +1,7 @@
-use crate::interpreter::{DataType, Variable};
+use crate::{
+    functions::silm_typeof,
+    interpreter::{DataType, Variable},
+};
 
 // This function goes hard, feel free to copy & paste
 pub fn extract_data(data: &str, variables: &[Variable]) -> Result<Option<Variable>, String> {
@@ -91,6 +94,16 @@ pub fn extract_data(data: &str, variables: &[Variable]) -> Result<Option<Variabl
                 Some(variable) => Ok(Some(variable)),
 
                 None => Err(format!("variable '{}' unrecognised", data)),
+            }
+        } else if let Some(result) = call_function(
+            data_tokens[0],
+            data_tokens[1..].to_vec(),
+            &mut variables.to_vec(),
+        ) {
+            match result {
+                Ok(returned_value) => Ok(Some(returned_value)),
+
+                Err(error) => Err(error),
             }
         } else {
             match shunting_yard(data_tokens, variables) {
@@ -406,4 +419,20 @@ fn test_shunting_yard() {
         .collect();
 
     assert_eq!(shunting_yard(tokens, &variables), Ok(258.92));
+}
+
+fn call_function(
+    name: &str,
+    tokens: Vec<&str>,
+    variables: &mut [Variable],
+) -> Option<Result<Variable, String>> {
+    match name {
+        "typeof" => match silm_typeof(tokens, variables) {
+            Ok(returned_value) => Some(Ok(returned_value)),
+
+            Err(error) => Some(Err(format!("{}: {}", name, error))),
+        },
+
+        _ => None,
+    }
 }

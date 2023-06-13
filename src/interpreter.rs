@@ -31,8 +31,6 @@ pub fn interpret(
 
             "formatln" => silm_formatln(tokens[1..].to_vec(), input_name, line_number, variables),
 
-            "typeof" => silm_typeof(tokens[1..].to_vec(), input_name, line_number, variables),
-
             "readline" => silm_readline(tokens[1..].to_vec(), input_name, line_number, variables),
 
             "exit" => silm_exit(tokens[1..].to_vec(), input_name, line_number),
