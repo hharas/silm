@@ -57,7 +57,7 @@ pub fn extract_data(data: &str, variables: &[Variable]) -> Result<Option<Variabl
                 datatype,
                 value,
             }))
-        } else if data.chars().next().unwrap().is_ascii_digit() {
+        } else if data.chars().next().unwrap().is_ascii_digit() || data.starts_with('-') {
             if data_tokens.len() > 1 {
                 match shunting_yard(data_tokens, variables) {
                     Ok(result) => Ok(Some(Variable {
