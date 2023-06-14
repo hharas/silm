@@ -1,6 +1,6 @@
 <img align="left" style="width: 277px" src="./silm.png" width="277" />
 
-## Silm
+# Silm
 
 Experimental, line-by-line-interpreted programming language written in Rust.
 
