@@ -1,20 +1,8 @@
 <img align="left" style="width: 277px" src="./silm.png" width="277" />
 
-# Silm
+**Silm is a line-by-line-interpreted programming language written in Rust.**
 
-Experimental, line-by-line-interpreted programming language written in Rust.
-
-## Why?
-
-I wondered how hard will an interpreter be to write, but it turns out it's pretty easy. Seriously though, I thought of importing silm (or probably some of its code) to [Aati](https://github.com/hharas/aati) in order to add support for PKGINSTALL files (coming along the way).
-
----
-
-## What does Silm mean?
-
-Silm (سِلم) is an Arabic word that means "Peace".
-
-## How does it work?
+## What?
 
 At the essence of it, Silm is merely an `interpret()` function that accepts four arguments:
 1. a line of code,
@@ -22,7 +10,11 @@ At the essence of it, Silm is merely an `interpret()` function that accepts four
 3. current line number in the file (e.g. `1` for `<stdin>`),
 4. and a mutable reference to a vector of `Variable` structs.
 
-Which makes it very portable and easy to implement, and also easy to develop further.
+---
+
+## What does Silm mean?
+
+Silm (سِلم) is an Arabic word that means "Peace".
 
 ## What is what?
 
