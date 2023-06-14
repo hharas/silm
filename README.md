@@ -1,4 +1,4 @@
-<img align="left" style="width: 277px" src="./silm.png" width="277" />
+<img align="left" style="width: 277px" src="./silm.png" width="282" />
 
 **Silm is a line-by-line-interpreted programming language written in Rust.**
 
