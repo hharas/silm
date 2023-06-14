@@ -6,9 +6,7 @@ Experimental, line-by-line-interpreted programming language written in Rust.
 
 ## Why?
 
-I wondered how hard will an interpreter be to write, but it turns out it's pretty easy.
-
-Seriously though: I thought of importing silm (or probably some of its code) to [Aati](https://github.com/hharas/aati) in order to add support for PKGINSTALL files (coming along the way).
+I wondered how hard will an interpreter be to write, but it turns out it's pretty easy. Seriously though, I thought of importing silm (or probably some of its code) to [Aati](https://github.com/hharas/aati) in order to add support for PKGINSTALL files (coming along the way).
 
 ---
 
