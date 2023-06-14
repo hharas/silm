@@ -2,9 +2,11 @@
 
 **Silm is a line-by-line-interpreted programming language written in Rust.**
 
-## What?
-
-At the essence of it, Silm is merely an `interpret()` function that accepts four arguments: a line of code, a filename or input name (e.g. `main.slm` or `<stdin>`), current line number in the file (e.g. `1` for `<stdin>`), and a mutable reference to a vector of `Variable` structs. This makes Silm's syntax very simple and makes its development easier and more fun.
+At the essence of it, Silm is merely an `interpret()` function that accepts four arguments:  
+a line of code,  
+a filename or input name (e.g. `main.slm` or `<stdin>`),  
+current line number in the file (e.g. `1` for `<stdin>`),  
+and a mutable reference to a vector of `Variable` structs. This makes Silm's syntax very simple and makes its development easier and more fun.
 
 ---
 
