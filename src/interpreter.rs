@@ -48,13 +48,22 @@ pub fn interpret(
             _ => {
                 if let Some(variable) = get_variable(tokens[0], variables) {
                     if variable.datatype == DataType::Block {
-                        if tokens[1] == "()" {
-                            interpret(
-                                variable.value,
-                                format!("<block {}>", variable.identifier),
-                                0,
-                                variables,
-                            )
+                        if tokens.len() >= 2 {
+                            if tokens[1] == "()" {
+                                interpret(
+                                    variable.value,
+                                    format!("<block {}>", variable.identifier),
+                                    0,
+                                    variables,
+                                )
+                            } else {
+                                throw_error(
+                                    "block call must contain two parantheses",
+                                    &variable.identifier,
+                                    input_name,
+                                    line_number,
+                                );
+                            }
                         } else {
                             throw_error(
                                 "invalid block call",
