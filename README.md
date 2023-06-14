@@ -14,7 +14,7 @@ This makes Silm's syntax very simple and makes its development easier and more f
 
 ## What does Silm mean?
 
-Silm (سِلم) is an Arabic word that means "Peace".
+Silm (سِلم) is an Arabic word that means "Serenity".
 
 ## What file is what?
 
