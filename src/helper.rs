@@ -253,6 +253,8 @@ pub fn represent_datatype(datatype: DataType) -> &'static str {
         DataType::Str => "str",
 
         DataType::Char => "char",
+
+        DataType::Block => "block",
     }
 }
 

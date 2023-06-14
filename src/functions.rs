@@ -309,8 +309,46 @@ pub fn silm_exit(tokens: Vec<&str>, input_name: String, line_number: i32) {
         }
     } else {
         throw_error(
-            "function call requires parantheses",
+            "function call requires two parantheses",
             "exit",
+            input_name,
+            line_number,
+        )
+    }
+}
+
+pub fn silm_block(
+    tokens: Vec<&str>,
+    input_name: String,
+    line_number: i32,
+    variables: &mut Vec<Variable>,
+) {
+    if !tokens.is_empty() {
+        let name = tokens[0];
+
+        if tokens[1] == "()" {
+            let block_code = &tokens[2..].join(" ");
+
+            assign(
+                Variable {
+                    identifier: name.to_string(),
+                    datatype: DataType::Block,
+                    value: block_code.to_string(),
+                },
+                variables,
+            )
+        } else {
+            throw_error(
+                "block must have two parantheses",
+                "block",
+                input_name,
+                line_number,
+            )
+        }
+    } else {
+        throw_error(
+            "block can not be nameless",
+            "block",
             input_name,
             line_number,
         )

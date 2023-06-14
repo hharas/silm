@@ -1,4 +1,7 @@
-use crate::functions::*;
+use crate::{
+    functions::*,
+    helper::{get_variable, throw_error},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DataType {
@@ -7,6 +10,7 @@ pub enum DataType {
     Str,
     Char,
     Bool,
+    Block,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -33,6 +37,8 @@ pub fn interpret(
 
             "readline" => silm_readline(tokens[1..].to_vec(), input_name, line_number, variables),
 
+            "block" => silm_block(tokens[1..].to_vec(), input_name, line_number, variables),
+
             "exit" => silm_exit(tokens[1..].to_vec(), input_name, line_number),
 
             "#" => {}
@@ -40,12 +46,39 @@ pub fn interpret(
             "" => {}
 
             _ => {
-                println!(
-                    "{}:{}: unrecognised function: {}",
-                    input_name,
-                    line_number,
-                    tokens.join(" ")
-                );
+                if let Some(variable) = get_variable(tokens[0], variables) {
+                    if variable.datatype == DataType::Block {
+                        if tokens[1] == "()" {
+                            interpret(
+                                variable.value,
+                                format!("<block {}>", variable.identifier),
+                                0,
+                                variables,
+                            )
+                        } else {
+                            throw_error(
+                                "invalid block call",
+                                &variable.identifier,
+                                input_name,
+                                line_number,
+                            );
+                        }
+                    } else {
+                        println!(
+                            "{}:{}: unrecognised function: {}",
+                            input_name,
+                            line_number,
+                            tokens.join(" ")
+                        );
+                    }
+                } else {
+                    println!(
+                        "{}:{}: unrecognised function: {}",
+                        input_name,
+                        line_number,
+                        tokens.join(" ")
+                    );
+                }
             }
         }
     }
