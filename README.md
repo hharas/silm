@@ -1,4 +1,6 @@
-# Silm
+<img align="left" style="width: 277px" src="./silm.png" width="277" />
+
+## Silm
 
 Experimental, line-by-line-interpreted programming language written in Rust.
 
@@ -7,6 +9,8 @@ Experimental, line-by-line-interpreted programming language written in Rust.
 I wondered how hard will an interpreter be to write, but it turns out it's pretty easy.
 
 Seriously though: I thought of importing silm (or probably some of its code) to [Aati](https://github.com/hharas/aati) in order to add support for PKGINSTALL files (coming along the way).
+
+---
 
 ## What does Silm mean?
 
