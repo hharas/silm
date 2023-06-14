@@ -40,7 +40,7 @@ That's the Standard Library of Silm, since it contains the functions `interprete
 
 These are helper functions that are needed for the functions in the standard library to work. It contains some algorithms that make up the essence of the language.
 
-#### `src/version.rs`
+### `src/version.rs`
 
 Just a file that reminds Silm what version it is right now.
 
