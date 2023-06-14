@@ -4,11 +4,7 @@
 
 ## What?
 
-At the essence of it, Silm is merely an `interpret()` function that accepts four arguments:
-1. a line of code,
-2. filename or input name (e.g. `main.slm` or `<stdin>`),
-3. current line number in the file (e.g. `1` for `<stdin>`),
-4. and a mutable reference to a vector of `Variable` structs.
+At the essence of it, Silm is merely an `interpret()` function that accepts four arguments: a line of code, a filename or input name (e.g. `main.slm` or `<stdin>`), current line number in the file (e.g. `1` for `<stdin>`), and a mutable reference to a vector of `Variable` structs. This makes Silm's syntax very simple and makes its development easier and more fun.
 
 ---
 
@@ -16,7 +12,7 @@ At the essence of it, Silm is merely an `interpret()` function that accepts four
 
 Silm (سِلم) is an Arabic word that means "Peace".
 
-## What is what?
+## What file is what?
 
 ### `src/main.rs`
 
