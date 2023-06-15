@@ -329,11 +329,13 @@ pub fn silm_block(
         if tokens[1] == "()" {
             let block_code = &tokens[2..].join(" ");
 
+            let sections: Vec<&str> = block_code.split("\\;").collect();
+
             assign(
                 Variable {
                     identifier: name.to_string(),
                     datatype: DataType::Block,
-                    value: block_code.to_string(),
+                    value: sections.join("\n"),
                 },
                 variables,
             )

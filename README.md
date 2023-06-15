@@ -50,6 +50,10 @@ let silm_is_a = 'W'
 let real = true
 
 # Variables' values and types are also mutable by default
+# When you want to assign a variable to another variable like this:
+let z = y
+
+# Silm is merely gonna copy y's datatype and value to z and not make a reference to it
 
 # Function calls look a little weird but they still work
 # Most of them are I/O functions like `println`
@@ -63,6 +67,9 @@ println ()
 formatln ("Silm is {word}")
 
 # There's also `typeof`, which receives a variable and returns a str containing the variable's datatype
+# functions like `typeof` are called inline functions, they're functions that:
+# (1) return variables
+# (2) can be called inside other functions, like how I'm calling `typeof` inside `println`:
 println (typeof (y))
 
 # and we have `readline`! the most complicated function of them all
@@ -71,7 +78,18 @@ println (typeof (y))
 let name = ""
 readline ("What's your name? ", name)
 
+# `formatln` looks for variables 
 formatln ("Nice to meet you, {name}!")
+
+# You can also put all that code in a block that you can always execute later
+# It's something like a function, you can create them using the `block` function
+# keep in mind that code blocks have their own scope of variables
+# which makes them somewhat similar to "pure" functions
+# lines of code inside blocks are separated using the `\;` separator
+block greet () let name = "" \; readline ("What's your name? ", name) \; formatln ("Nice to meet you, {name}!")
+
+# blocks are called just line global functions, as you can see
+greet ()
 
 # at this point the program will exit, but you can also explicltly exit using:
 exit ()

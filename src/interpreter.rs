@@ -50,12 +50,19 @@ pub fn interpret(
                     if variable.datatype == DataType::Block {
                         if tokens.len() >= 2 {
                             if tokens[1] == "()" {
-                                interpret(
-                                    variable.value,
-                                    format!("<block {}>", variable.identifier),
-                                    0,
-                                    variables,
-                                )
+                                let mut block_variables: Vec<Variable> = Vec::new();
+                                let mut current_line = 0;
+
+                                for line in variable.value.lines() {
+                                    current_line += 1;
+
+                                    interpret(
+                                        line.to_string(),
+                                        format!("<block {}>", variable.identifier),
+                                        current_line,
+                                        &mut block_variables,
+                                    )
+                                }
                             } else {
                                 throw_error(
                                     "block call must contain two parantheses",
