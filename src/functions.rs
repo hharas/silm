@@ -1,11 +1,12 @@
 use std::{
+    fs::read_to_string,
     io::{self, Write},
     process::exit,
 };
 
 use crate::{
     helper::{assign, extract_data, get_variable, represent_datatype, throw_error},
-    interpreter::{DataType, Variable},
+    interpreter::{interpret, DataType, Variable},
 };
 
 pub fn silm_let(
@@ -354,5 +355,122 @@ pub fn silm_block(
             input_name,
             line_number,
         )
+    }
+}
+
+pub fn silm_interpret(
+    tokens: Vec<&str>,
+    input_name: String,
+    line_number: i32,
+    variables: &mut Vec<Variable>,
+) {
+    if !tokens.is_empty() {
+        let argument = &mut tokens[0..].join(" ");
+
+        if argument.starts_with('(') && argument.ends_with(')') {
+            argument.remove(0);
+            argument.pop();
+
+            match extract_data(argument, variables) {
+                Ok(variable_option) => {
+                    if let Some(variable) = variable_option {
+                        if variable.datatype == DataType::Str {
+                            let filename = variable.value;
+                            match read_to_string(filename.clone()) {
+                                Ok(code) => {
+                                    let mut current_line = 0;
+                                    for line in code.lines() {
+                                        current_line += 1;
+                                        interpret(
+                                            line.to_string(),
+                                            filename.clone(),
+                                            current_line,
+                                            variables,
+                                        );
+                                    }
+                                }
+
+                                Err(error) => {
+                                    throw_error(
+                                        &format!("{}", error),
+                                        "interpret",
+                                        input_name,
+                                        line_number,
+                                    );
+                                }
+                            }
+                        } else {
+                            throw_error(
+                                "argument must be a str",
+                                "interpret",
+                                input_name,
+                                line_number,
+                            );
+                        }
+                    } else {
+                        println!();
+                    }
+                }
+                Err(error) => {
+                    throw_error(&error, "interpret", input_name, line_number);
+                }
+            }
+        } else {
+            throw_error(
+                "function call does not contain two parantheses",
+                "interpret",
+                input_name,
+                line_number,
+            );
+        }
+    } else {
+        throw_error("no argument provided", "interpret", input_name, line_number);
+    }
+}
+
+pub fn silm_eval(
+    tokens: Vec<&str>,
+    input_name: String,
+    line_number: i32,
+    variables: &mut Vec<Variable>,
+) {
+    if !tokens.is_empty() {
+        let argument = &mut tokens[0..].join(" ");
+
+        if argument.starts_with('(') && argument.ends_with(')') {
+            argument.remove(0);
+            argument.pop();
+
+            match extract_data(argument, variables) {
+                Ok(variable_option) => {
+                    if let Some(variable) = variable_option {
+                        if variable.datatype == DataType::Str {
+                            interpret(variable.value, input_name, line_number, variables);
+                        } else {
+                            throw_error(
+                                "argument must be a str",
+                                "interpret",
+                                input_name,
+                                line_number,
+                            );
+                        }
+                    } else {
+                        println!();
+                    }
+                }
+                Err(error) => {
+                    throw_error(&error, "interpret", input_name, line_number);
+                }
+            }
+        } else {
+            throw_error(
+                "function call does not contain two parantheses",
+                "interpret",
+                input_name,
+                line_number,
+            );
+        }
+    } else {
+        throw_error("no argument provided", "interpret", input_name, line_number);
     }
 }

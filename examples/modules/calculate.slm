@@ -1,0 +1,4 @@
+# x here is unknown, however this module can be called from another module
+# and the other module will pass its variables to this one
+let y = x ^ 2 * 5 - 3
+println (y)

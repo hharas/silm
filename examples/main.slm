@@ -1,0 +1,10 @@
+let x = 10
+
+# Here we're telling Silm to interpret another file considering
+# the variable present in this file, and this is how `modules/calculate.slm`
+# is gonna recognise the variable x
+interpret ("modules/calculate.slm")
+
+# As of here we're just evaluating code with respect to variables
+# in this scope
+eval ("println (x)")

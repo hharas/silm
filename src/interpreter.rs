@@ -39,44 +39,55 @@ pub fn interpret(
 
             "block" => silm_block(tokens[1..].to_vec(), input_name, line_number, variables),
 
-            "exit" => silm_exit(tokens[1..].to_vec(), input_name, line_number),
+            "interpret" => silm_interpret(tokens[1..].to_vec(), input_name, line_number, variables),
 
-            "#" => {}
+            "eval" => silm_eval(tokens[1..].to_vec(), input_name, line_number, variables),
+
+            "exit" => silm_exit(tokens[1..].to_vec(), input_name, line_number),
 
             "" => {}
 
             _ => {
-                if let Some(variable) = get_variable(tokens[0], variables) {
-                    if variable.datatype == DataType::Block {
-                        if tokens.len() >= 2 {
-                            if tokens[1] == "()" {
-                                let mut block_variables: Vec<Variable> = Vec::new();
-                                let mut current_line = 0;
+                if !tokens[0].starts_with('#') {
+                    if let Some(variable) = get_variable(tokens[0], variables) {
+                        if variable.datatype == DataType::Block {
+                            if tokens.len() >= 2 {
+                                if tokens[1] == "()" {
+                                    let mut block_variables: Vec<Variable> = Vec::new();
+                                    let mut current_line = 0;
 
-                                for line in variable.value.lines() {
-                                    current_line += 1;
+                                    for line in variable.value.lines() {
+                                        current_line += 1;
 
-                                    interpret(
-                                        line.to_string(),
-                                        format!("<block {}>", variable.identifier),
-                                        current_line,
-                                        &mut block_variables,
-                                    )
+                                        interpret(
+                                            line.to_string(),
+                                            format!("<block {}>", variable.identifier),
+                                            current_line,
+                                            &mut block_variables,
+                                        )
+                                    }
+                                } else {
+                                    throw_error(
+                                        "block call must contain two parantheses",
+                                        &variable.identifier,
+                                        input_name,
+                                        line_number,
+                                    );
                                 }
                             } else {
                                 throw_error(
-                                    "block call must contain two parantheses",
+                                    "invalid block call",
                                     &variable.identifier,
                                     input_name,
                                     line_number,
                                 );
                             }
                         } else {
-                            throw_error(
-                                "invalid block call",
-                                &variable.identifier,
+                            println!(
+                                "{}:{}: unrecognised function: {}",
                                 input_name,
                                 line_number,
+                                tokens.join(" ")
                             );
                         }
                     } else {
@@ -87,13 +98,6 @@ pub fn interpret(
                             tokens.join(" ")
                         );
                     }
-                } else {
-                    println!(
-                        "{}:{}: unrecognised function: {}",
-                        input_name,
-                        line_number,
-                        tokens.join(" ")
-                    );
                 }
             }
         }
