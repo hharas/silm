@@ -28,7 +28,7 @@ Now that's the whole wrapper of the language, it contains the `interpret()` func
 
 ### `src/functions.rs`
 
-That's the Standard Library of Silm, since it contains the functions `interpreter.rs` will use and execute based on user input. It contains functions like `println`, `let`, `readline` and more.
+That's the Standard Library of Silm, since it contains the functions `interpreter.rs` will use and execute based on user input. It contains functions like `println`, `let`, `readln` and more.
 
 ### `src/helper.rs`
 
@@ -54,6 +54,7 @@ let real = true
 let z = y
 
 # Silm is merely gonna copy y's datatype and value to z and not make a reference to it
+# Which means when z changes, y isn't gonna change with it accordingly
 
 # Function calls look a little weird but they still work
 # Most of them are I/O functions like `println`
@@ -72,28 +73,50 @@ formatln ("Silm is {word}")
 # (2) can be called inside other functions, like how I'm calling `typeof` inside `println`:
 println (typeof (y))
 
-# and we have `readline`! the most complicated function of them all
+# and we have `readln`! the most complicated function of them all
 # it receives two strings, it prints out the first one to the user,
 # it receives user input from stdin, then it stores it in the second string
 let name = ""
-readline ("What's your name? ", name)
+readln ("What's your name? ", name)
 
-# `formatln` looks for variables 
+# `formatln` looks for variables between brackets and prints out their value
+# if a variable is not found, it's not gonna throw an error or anything which is a problem
 formatln ("Nice to meet you, {name}!")
 
 # You can also put all that code in a block that you can always execute later
 # It's something like a function, you can create them using the `block` function
 # keep in mind that code blocks have their own scope of variables
-# which makes them somewhat similar to "pure" functions
-# lines of code inside blocks are separated using the `\;` separator
-block greet () let name = "" \; readline ("What's your name? ", name) \; formatln ("Nice to meet you, {name}!")
+# which can maybe be called "forcibly-pure" functions
+# Silm translates the `\;` separator in blocks as a newline
+block greet () let name = "" \; readln ("What's your name? ", name) \; formatln ("Nice to meet you, {name}!")
 
-# blocks are called just line global functions, as you can see
+# blocks are called just like global functions get called, as you can see
 greet ()
 
-# at this point the program will exit, but you can also explicltly exit using:
-exit ()
+# If you want, you can also evaluate code and run it:
+eval ("println ('W')")
+
+# You may also import variables & blocks from other modules, say:
+import ("version.slm")
+println (version)
+
+# Or interpret files using this file's current variables!
+interpret ("welcome.slm")
+
+# at this point the program will exit, but you can also explicltly exit using exit ()
 # this is helpful when you're using the interactive mode
+exit ()
+```
+
+`version.slm`:
+```bash
+let language_name = "Silm"
+let version = "0.1.0"
+```
+
+`welcome.slm`:
+```bash
+println ("Welcome to {language_name}!")
 ```
 
 You can run that code using:

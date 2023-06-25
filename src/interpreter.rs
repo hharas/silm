@@ -35,13 +35,15 @@ pub fn interpret(
 
             "formatln" => silm_formatln(tokens[1..].to_vec(), input_name, line_number, variables),
 
-            "readline" => silm_readline(tokens[1..].to_vec(), input_name, line_number, variables),
+            "readln" => silm_readln(tokens[1..].to_vec(), input_name, line_number, variables),
 
             "block" => silm_block(tokens[1..].to_vec(), input_name, line_number, variables),
 
             "interpret" => silm_interpret(tokens[1..].to_vec(), input_name, line_number, variables),
 
             "eval" => silm_eval(tokens[1..].to_vec(), input_name, line_number, variables),
+
+            "import" => silm_import(tokens[1..].to_vec(), input_name, line_number, variables),
 
             "exit" => silm_exit(tokens[1..].to_vec(), input_name, line_number),
 

@@ -189,7 +189,7 @@ pub fn silm_typeof(tokens: Vec<&str>, variables: &[Variable]) -> Result<Variable
     }
 }
 
-pub fn silm_readline(
+pub fn silm_readln(
     tokens: Vec<&str>,
     input_name: String,
     line_number: i32,
@@ -230,7 +230,7 @@ pub fn silm_readline(
                                                     Err(_) => {
                                                         throw_error(
                                                             "invalid input",
-                                                            "readline",
+                                                            "readln",
                                                             input_name,
                                                             line_number,
                                                         );
@@ -243,7 +243,7 @@ pub fn silm_readline(
                                                         first_argument_str
                                                     )
                                                     .as_str(),
-                                                    "readline",
+                                                    "readln",
                                                     input_name,
                                                     line_number,
                                                 );
@@ -251,7 +251,7 @@ pub fn silm_readline(
                                         } else {
                                             throw_error(
                                                 "second argument not given",
-                                                "readline",
+                                                "readln",
                                                 input_name,
                                                 line_number,
                                             )
@@ -259,26 +259,26 @@ pub fn silm_readline(
                                     }
 
                                     Err(error) => {
-                                        throw_error(&error, "readline", input_name, line_number)
+                                        throw_error(&error, "readln", input_name, line_number)
                                     }
                                 }
                             } else {
                                 throw_error(
                                     "first argument not given",
-                                    "readline",
+                                    "readln",
                                     input_name,
                                     line_number,
                                 )
                             }
                         }
 
-                        Err(error) => throw_error(&error, "readline", input_name, line_number),
+                        Err(error) => throw_error(&error, "readln", input_name, line_number),
                     }
                 }
 
                 None => throw_error(
                     "function requires two arguments",
-                    "readline",
+                    "readln",
                     input_name,
                     line_number,
                 ),
@@ -286,7 +286,7 @@ pub fn silm_readline(
         } else {
             throw_error(
                 "function call does not contain two parantheses",
-                "readline",
+                "readln",
                 input_name,
                 line_number,
             );
@@ -294,7 +294,7 @@ pub fn silm_readline(
     } else {
         throw_error(
             "function requires at least two tokens",
-            "readline",
+            "readln",
             input_name,
             line_number,
         );
@@ -446,6 +446,89 @@ pub fn silm_eval(
                     if let Some(variable) = variable_option {
                         if variable.datatype == DataType::Str {
                             interpret(variable.value, input_name, line_number, variables);
+                        } else {
+                            throw_error(
+                                "argument must be a str",
+                                "interpret",
+                                input_name,
+                                line_number,
+                            );
+                        }
+                    } else {
+                        println!();
+                    }
+                }
+                Err(error) => {
+                    throw_error(&error, "interpret", input_name, line_number);
+                }
+            }
+        } else {
+            throw_error(
+                "function call does not contain two parantheses",
+                "interpret",
+                input_name,
+                line_number,
+            );
+        }
+    } else {
+        throw_error("no argument provided", "interpret", input_name, line_number);
+    }
+}
+
+pub fn silm_import(
+    tokens: Vec<&str>,
+    input_name: String,
+    line_number: i32,
+    variables: &mut Vec<Variable>,
+) {
+    if !tokens.is_empty() {
+        let argument = &mut tokens[0..].join(" ");
+
+        if argument.starts_with('(') && argument.ends_with(')') {
+            argument.remove(0);
+            argument.pop();
+
+            match extract_data(argument, variables) {
+                Ok(variable_option) => {
+                    if let Some(variable) = variable_option {
+                        if variable.datatype == DataType::Str {
+                            let filename = variable.value;
+                            match read_to_string(filename.clone()) {
+                                Ok(code) => {
+                                    let mut current_line = 0;
+                                    for line in code.lines() {
+                                        current_line += 1;
+                                        let code_tokens: Vec<&str> =
+                                            line.split_whitespace().collect();
+                                        if !code_tokens.is_empty() {
+                                            if code_tokens[0] == "let" {
+                                                silm_let(
+                                                    code_tokens[1..].to_vec(),
+                                                    filename.clone(),
+                                                    current_line,
+                                                    variables,
+                                                )
+                                            } else if code_tokens[0] == "block" {
+                                                silm_block(
+                                                    code_tokens[1..].to_vec(),
+                                                    filename.clone(),
+                                                    current_line,
+                                                    variables,
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Err(error) => {
+                                    throw_error(
+                                        &format!("{}", error),
+                                        "interpret",
+                                        input_name,
+                                        line_number,
+                                    );
+                                }
+                            }
                         } else {
                             throw_error(
                                 "argument must be a str",
