@@ -26,13 +26,17 @@ This is the CLI front-end of Silm, or specifically the `src/interpreter.rs` modu
 
 Now that's the whole wrapper of the language, it contains the `interpret()` function which is ran on files line-by-line or through an interactive mode.
 
+### `src/commands.rs`
+
+That's where global commands are defined, which are the commands `interpreter.rs` will detect and execute. It contains commands like `println`, `let`, `readln` and more.
+
 ### `src/functions.rs`
 
-That's the Standard Library of Silm, since it contains the functions `interpreter.rs` will use and execute based on user input. It contains functions like `println`, `let`, `readln` and more.
+That's Silm's Standard Library of functions that can't be used globally as commands but rather inside commands. It contains functions like `eq`, `ne`, `typeof` and more.
 
 ### `src/helper.rs`
 
-These are helper functions that are needed for the functions in the standard library to work. It contains some algorithms that make up the essence of the language.
+These are helper functions that are needed for the commands & functions in the standard library to work properly. It contains some algorithms that make up the essence of the language.
 
 ### `src/version.rs`
 
@@ -55,6 +59,12 @@ let z = y
 
 # Silm is merely gonna copy y's datatype and value to z and not make a reference to it
 # Which means when z changes, y isn't gonna change with it accordingly
+
+# There also global variables that Silm adds by itself to the variables vector, that are:
+# $version$     : Silm's current version
+# $line$        : Current line being interpreted
+# $line_number$ : Current line number
+# $input_name$  : Current input name
 
 # Function calls look a little weird but they still work
 # Most of them are I/O functions like `println`
@@ -93,8 +103,15 @@ block greet () let name = "" \; readln ("What's your name? ", name) \; formatln 
 # blocks are called just like global functions get called, as you can see
 greet ()
 
+# You can also make sure some code only runs at a certain condition using the if command supported by the `eq` (equal to) and `ne` (not equal to) functions:
+if (eq (name, "salem")) :: println ("Your name is Salem!")
+if (eq (name, "saleh")) :: println ("Your name is not Salem but Saleh!")
+
 # If you want, you can also evaluate code and run it:
 eval ("println ('W')")
+# That'd be quite dangerous if you're gonna run:
+# eval ($line$)
+# because that's gonna be a stack overflow of Silm telling itself to interpret itself over and over again
 
 # You may also import variables & blocks from other modules, say:
 import ("version.slm")

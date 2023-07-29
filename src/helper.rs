@@ -1,5 +1,5 @@
 use crate::{
-    functions::silm_typeof,
+    functions::{silm_eq, silm_nameof, silm_ne, silm_typeof},
     interpreter::{DataType, Variable},
 };
 
@@ -123,13 +123,11 @@ pub fn extract_data(data: &str, variables: &[Variable]) -> Result<Option<Variabl
 
 #[test]
 fn test_extract_data() {
-    let mut variables: Vec<Variable> = Vec::new();
-
-    variables.push(Variable {
+    let variables: Vec<Variable> = vec![Variable {
         identifier: "x".to_string(),
         datatype: DataType::Int,
         value: "10".to_string(),
-    });
+    }];
 
     assert_eq!(
         extract_data("10", &variables),
@@ -222,9 +220,9 @@ fn test_assign() {
 
     assert!(variables
         .iter()
-        .any(|variable| variable.identifier == "new_var".to_string()
+        .any(|variable| variable.identifier == *"new_var"
             && variable.datatype == DataType::Int
-            && variable.value == "10".to_string()));
+            && variable.value == *"10"));
 
     assign(
         Variable {
@@ -235,11 +233,11 @@ fn test_assign() {
         &mut variables,
     );
 
-    assert!(variables.iter().any(
-        |variable| variable.identifier == "already_there".to_string()
+    assert!(variables
+        .iter()
+        .any(|variable| variable.identifier == *"already_there"
             && variable.datatype == DataType::Str
-            && variable.value == "changed now!".to_string()
-    ));
+            && variable.value == *"changed now!"));
 }
 
 pub fn represent_datatype(datatype: DataType) -> &'static str {
@@ -287,7 +285,7 @@ fn test_get_variable() {
 
 pub fn throw_error(message: &str, current_function: &str, input_name: String, line_number: i32) {
     println!(
-        "{}:{}: {}: {}",
+        "error at {}:{}: {}: {}",
         input_name, line_number, current_function, message
     );
 }
@@ -409,12 +407,11 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f64, S
 
 #[test]
 fn test_shunting_yard() {
-    let mut variables: Vec<Variable> = Vec::new();
-    variables.push(Variable {
+    let variables: Vec<Variable> = vec![Variable {
         identifier: "x".to_string(),
         datatype: DataType::Int,
         value: "256".to_string(),
-    });
+    }];
 
     let tokens: Vec<&str> = "x + 1 + 2 - ( 3 * 4 ) / 5 ^ 6 % 7"
         .split_whitespace()
@@ -430,6 +427,24 @@ fn call_function(
 ) -> Option<Result<Variable, String>> {
     match name {
         "typeof" => match silm_typeof(tokens, variables) {
+            Ok(returned_value) => Some(Ok(returned_value)),
+
+            Err(error) => Some(Err(format!("{}: {}", name, error))),
+        },
+
+        "nameof" => match silm_nameof(tokens, variables) {
+            Ok(returned_value) => Some(Ok(returned_value)),
+
+            Err(error) => Some(Err(format!("{}: {}", name, error))),
+        },
+
+        "eq" => match silm_eq(tokens, variables) {
+            Ok(returned_value) => Some(Ok(returned_value)),
+
+            Err(error) => Some(Err(format!("{}: {}", name, error))),
+        },
+
+        "ne" => match silm_ne(tokens, variables) {
             Ok(returned_value) => Some(Ok(returned_value)),
 
             Err(error) => Some(Err(format!("{}: {}", name, error))),
