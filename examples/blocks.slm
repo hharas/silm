@@ -1,3 +1,3 @@
-block greet () let name = "" \; readln ("What's your name? ", name) \; formatln ("Nice to meet you, {name}!")
+block greet :: let name = "" \; readln ("What's your name? ", name) \; formatln ("Nice to meet you, {name}!")
 
 greet ()

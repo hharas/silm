@@ -252,7 +252,7 @@ pub fn silm_block(
     if !tokens.is_empty() {
         let name = tokens[0];
 
-        if tokens[1] == "()" {
+        if tokens[1] == "::" {
             let block_code = &tokens[2..].join(" ");
 
             let sections: Vec<&str> = block_code.split("\\;").collect();

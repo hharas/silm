@@ -98,7 +98,7 @@ formatln ("Nice to meet you, {name}!")
 # keep in mind that code blocks have their own scope of variables
 # which can maybe be called "forcibly-pure" functions
 # Silm translates the `\;` separator in blocks as a newline
-block greet () let name = "" \; readln ("What's your name? ", name) \; formatln ("Nice to meet you, {name}!")
+block greet :: let name = "" \; readln ("What's your name? ", name) \; formatln ("Nice to meet you, {name}!")
 
 # blocks are called just like global functions get called, as you can see
 greet ()
