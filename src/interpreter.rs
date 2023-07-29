@@ -85,6 +85,8 @@ pub fn interpret(
 
             "if" => silm_if(tokens[1..].to_vec(), input_name, line_number, variables),
 
+            "while" => silm_while(tokens[1..].to_vec(), input_name, line_number, variables),
+
             "exit" => silm_exit(tokens[1..].to_vec(), input_name, line_number),
 
             "" => {}

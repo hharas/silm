@@ -1,0 +1,5 @@
+# This is a live Silm interactive shell
+let PS1 = "> "
+let command = ""
+
+while (true) :: readln (PS1, command) \; eval (command)

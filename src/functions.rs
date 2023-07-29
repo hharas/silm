@@ -1,5 +1,5 @@
 use crate::{
-    helper::{extract_data, represent_datatype},
+    helper::{extract_data, get_variable, represent_datatype},
     interpreter::{DataType, Variable},
 };
 
@@ -247,4 +247,50 @@ fn test_silm_ne() {
         silm_ne(vec!["(false,", "true)"], &[]).unwrap().value,
         "true"
     );
+}
+
+pub fn silm_format(tokens: Vec<&str>, variables: &[Variable]) -> Result<Variable, String> {
+    if !tokens.is_empty() {
+        let argument_str = &mut tokens[0..].join(" ");
+
+        if argument_str.starts_with('(') && argument_str.ends_with(')') {
+            argument_str.remove(0);
+            argument_str.pop();
+
+            match extract_data(argument_str, variables) {
+                Ok(argument_option) => {
+                    if let Some(argument) = argument_option {
+                        let mut result = argument.value;
+
+                        // Can't loop over `variables` twice or else the borrow checker will go bananas
+                        for index in 0..variables.len() {
+                            let variable = &variables[index];
+                            let placeholder = format!("{{{}}}", variable.identifier);
+
+                            if let Some(found_variable) =
+                                get_variable(&variable.identifier, variables)
+                            {
+                                let value = found_variable.value;
+                                result = result.replace(&placeholder, &value);
+                            }
+                        }
+
+                        Ok(Variable {
+                            identifier: "$returned$".into(),
+                            datatype: DataType::Str,
+                            value: result,
+                        })
+                    } else {
+                        Err("command requires one argument".into())
+                    }
+                }
+
+                Err(error) => Err(error),
+            }
+        } else {
+            Err("command call does not contain two parantheses".into())
+        }
+    } else {
+        Err("command requires one argument".into())
+    }
 }

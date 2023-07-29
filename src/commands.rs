@@ -5,7 +5,8 @@ use std::{
 };
 
 use crate::{
-    helper::{assign, extract_data, get_variable, throw_error},
+    functions::silm_format,
+    helper::{assign, extract_data, throw_error},
     interpreter::{interpret, DataType, Variable},
 };
 
@@ -102,59 +103,14 @@ pub fn silm_formatln(
     line_number: i32,
     variables: &[Variable],
 ) {
-    if !tokens.is_empty() {
-        let argument_str = &mut tokens[0..].join(" ");
-
-        if argument_str.starts_with('(') && argument_str.ends_with(')') {
-            argument_str.remove(0);
-            argument_str.pop();
-
-            match extract_data(argument_str, variables) {
-                Ok(argument_option) => {
-                    if let Some(argument) = argument_option {
-                        let mut result = argument.value;
-
-                        // Can't loop over `variables` twice or else the borrow checker will go bananas
-                        for index in 0..variables.len() {
-                            let variable = &variables[index];
-                            let placeholder = format!("{{{}}}", variable.identifier);
-
-                            if let Some(found_variable) =
-                                get_variable(&variable.identifier, variables)
-                            {
-                                let value = found_variable.value;
-                                result = result.replace(&placeholder, &value);
-                            }
-                        }
-
-                        println!("{}", result);
-                    } else {
-                        throw_error(
-                            "command requires one argument",
-                            "formatln",
-                            input_name,
-                            line_number,
-                        )
-                    }
-                }
-
-                Err(error) => throw_error(&error, "formatln", input_name, line_number),
-            }
-        } else {
-            throw_error(
-                "command call does not contain two parantheses",
-                "formatln",
-                input_name,
-                line_number,
-            );
+    match silm_format(tokens, variables) {
+        Ok(returned) => {
+            println!("{}", returned.value);
         }
-    } else {
-        throw_error(
-            "command requires one argument",
-            "formatln",
-            input_name,
-            line_number,
-        )
+
+        Err(error) => {
+            throw_error(&error, "formatln", input_name, line_number);
+        }
     }
 }
 
@@ -599,5 +555,77 @@ pub fn silm_if(
         }
     } else {
         throw_error("no condition provided", "if", input_name, line_number);
+    }
+}
+
+pub fn silm_while(
+    tokens: Vec<&str>,
+    input_name: String,
+    line_number: i32,
+    variables: &mut Vec<Variable>,
+) {
+    if !tokens.is_empty() {
+        let arguments = &tokens[0..].join(" ");
+        match arguments.split_once(" :: ") {
+            Some((condition_str, then_str)) => {
+                let mut condition = String::from(condition_str);
+
+                if condition.starts_with('(') && condition.ends_with(')') {
+                    condition.remove(0);
+                    condition.pop();
+
+                    match extract_data(&condition, variables) {
+                        Ok(result_option) => {
+                            if let Some(result) = result_option {
+                                if result.datatype == DataType::Bool {
+                                    if result.value == "true" {
+                                        let then: Vec<&str> = then_str.split("\\;").collect();
+
+                                        for line in then {
+                                            interpret(
+                                                line.into(),
+                                                input_name.clone(),
+                                                line_number,
+                                                variables,
+                                            );
+                                        }
+
+                                        silm_while(tokens, input_name, line_number, variables);
+                                    }
+                                } else {
+                                    throw_error(
+                                        "condition must be of type bool",
+                                        "while",
+                                        input_name,
+                                        line_number,
+                                    );
+                                }
+                            }
+                        }
+
+                        Err(error) => {
+                            throw_error(&error, "while", input_name, line_number);
+                        }
+                    }
+                } else {
+                    throw_error(
+                        "command condition must contain two parantheses",
+                        "while",
+                        input_name,
+                        line_number,
+                    );
+                }
+            }
+            None => {
+                throw_error(
+                    "no condition-bound code provided",
+                    "while",
+                    input_name,
+                    line_number,
+                );
+            }
+        }
+    } else {
+        throw_error("no condition provided", "while", input_name, line_number);
     }
 }

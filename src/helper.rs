@@ -1,5 +1,5 @@
 use crate::{
-    functions::{silm_eq, silm_nameof, silm_ne, silm_typeof},
+    functions::{silm_eq, silm_format, silm_nameof, silm_ne, silm_typeof},
     interpreter::{DataType, Variable},
 };
 
@@ -445,6 +445,12 @@ fn call_function(
         },
 
         "ne" => match silm_ne(tokens, variables) {
+            Ok(returned_value) => Some(Ok(returned_value)),
+
+            Err(error) => Some(Err(format!("{}: {}", name, error))),
+        },
+
+        "format" => match silm_format(tokens, variables) {
             Ok(returned_value) => Some(Ok(returned_value)),
 
             Err(error) => Some(Err(format!("{}: {}", name, error))),
