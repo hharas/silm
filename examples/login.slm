@@ -1,4 +1,4 @@
-# Simple application that authorises a user if he enters the appropriate passphrase
+# Simple application that authorises a user to a Silm shell if he enters the appropriate passphrase
 
 # Import the supposedly secret passphrase
 import ("modules/secret.slm")
@@ -6,5 +6,5 @@ import ("modules/secret.slm")
 let entered_passphrase = ""
 readln ("Enter the passphrase: ", entered_passphrase)
 
-if (eq (secret_passphrase, entered_passphrase)) :: println ("You're authorised") \; # Silm will ignore this piece of code if the condition is false
+if (eq (secret_passphrase, entered_passphrase)) :: println ("You're authorised!") \; interpret ("shell.slm")
 if (ne (secret_passphrase, entered_passphrase)) :: println ("Incorrect passphrase!")
