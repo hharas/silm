@@ -465,7 +465,7 @@ pub fn silm_import(
                     } else {
                         throw_error(
                             "command requires one argument",
-                            "current_function",
+                            "import",
                             input_name,
                             line_number,
                         );
