@@ -296,7 +296,7 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f64, S
     let mut output_queue: Vec<String> = Vec::new();
     let mut output_stack: Vec<f64> = Vec::new();
     let mut operator_stack: Vec<String> = Vec::new();
-    let operators = "+-*/^%";
+    let operators = "+-*/%";
 
     for token in tokens {
         if let Ok(number) = token.parse::<f64>() {
@@ -305,7 +305,7 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f64, S
         } else if operators.contains(token) {
             while let Some(op) = operator_stack.clone().last() {
                 if operators.contains(op)
-                    && ((token == "+" || token == "-") && (op == "*" || op == "/"))
+                    && ((token == "+" || token == "-") && (op == "*" || op == "/" || op == "%"))
                 {
                     output_queue.push(operator_stack.pop().unwrap());
                     let b = output_stack.pop().unwrap();
@@ -315,7 +315,6 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f64, S
                         "-" => a - b,
                         "*" => a * b,
                         "/" => a / b,
-                        "^" => (a * a) * b,
                         "%" => a % b,
                         _ => return Err(format!("invalid operator: {}", op)),
                     };
@@ -341,7 +340,6 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f64, S
                         "-" => a - b,
                         "*" => a * b,
                         "/" => a / b,
-                        "^" => (a * a) * b,
                         "%" => a % b,
                         _ => return Err(format!("invalid operator: {}", op)),
                     };
@@ -389,9 +387,9 @@ pub fn shunting_yard(tokens: Vec<&str>, variables: &[Variable]) -> Result<f64, S
         let result = match op.as_str() {
             "+" => a + b,
             "-" => a - b,
+            "^" => (a * a) * b,
             "*" => a * b,
             "/" => a / b,
-            "^" => (a * a) * b,
             "%" => a % b,
             _ => return Err(format!("invalid operator: {}", op)),
         };
@@ -413,11 +411,11 @@ fn test_shunting_yard() {
         value: "256".to_string(),
     }];
 
-    let tokens: Vec<&str> = "x + 1 + 2 - ( 3 * 4 ) / 5 ^ 6 % 7"
+    let tokens: Vec<&str> = "x + 1 + 2 - ( 3 * 4 ) / 5 % 7"
         .split_whitespace()
         .collect();
 
-    assert_eq!(shunting_yard(tokens, &variables), Ok(258.92));
+    assert_eq!(shunting_yard(tokens, &variables), Ok(256.6));
 }
 
 fn call_function(
