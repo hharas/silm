@@ -411,9 +411,7 @@ fn test_shunting_yard() {
         value: "256".to_string(),
     }];
 
-    let tokens: Vec<&str> = "x + 1 + 2 - ( 3 * 4 ) / 5 % 7"
-        .split_whitespace()
-        .collect();
+    let tokens: Vec<&str> = "x + 1 + 2 - ( 3 * 4 ) / 5 % 7".split_whitespace().collect();
 
     assert_eq!(shunting_yard(tokens, &variables), Ok(256.6));
 }
